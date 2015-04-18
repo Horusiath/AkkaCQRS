@@ -113,8 +113,11 @@ namespace AkkaCQRS.Core.Users
             return base.ReceiveCommand(message) || message.Match()
                 .With<UserCommands.SignInUser>(signIn =>
                 {
-                    if (string.Equals(State.Email, signIn.Email, StringComparison.InvariantCultureIgnoreCase) && ValidatePassword(State, signIn.Password))
+                    if (string.Equals(State.Email, signIn.Email, StringComparison.InvariantCultureIgnoreCase) 
+                        && ValidatePassword(State, signIn.Password))
+                    {
                         Persist(new UserEvents.UserSignedIn(_id), Sender);
+                    }
                     else
                     {
                         Log.Error("Unauthorized user sign in. User id: {0}, email: {1}", _id, signIn.Email);
