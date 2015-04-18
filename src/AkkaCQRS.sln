@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AkkaCQRS.Core", "AkkaCQRS.Core\AkkaCQRS.Core.csproj", "{49ABC7A3-A520-46C3-85EB-53BBE4CF6DB3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{0DEEDB0D-F084-40AD-8725-04654D3A0F0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AkkaCQRS.Tests", "AkkaCQRS.Tests\AkkaCQRS.Tests.csproj", "{F7C6454F-C259-4513-9EAB-1E38EA87CE00}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49ABC7A3-A520-46C3-85EB-53BBE4CF6DB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49ABC7A3-A520-46C3-85EB-53BBE4CF6DB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49ABC7A3-A520-46C3-85EB-53BBE4CF6DB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49ABC7A3-A520-46C3-85EB-53BBE4CF6DB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7C6454F-C259-4513-9EAB-1E38EA87CE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7C6454F-C259-4513-9EAB-1E38EA87CE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7C6454F-C259-4513-9EAB-1E38EA87CE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7C6454F-C259-4513-9EAB-1E38EA87CE00}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{49ABC7A3-A520-46C3-85EB-53BBE4CF6DB3} = {0DEEDB0D-F084-40AD-8725-04654D3A0F0C}
+		{F7C6454F-C259-4513-9EAB-1E38EA87CE00} = {0DEEDB0D-F084-40AD-8725-04654D3A0F0C}
+	EndGlobalSection
+EndGlobal
