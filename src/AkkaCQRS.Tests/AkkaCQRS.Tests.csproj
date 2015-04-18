@@ -76,7 +76,7 @@
     <Compile Include="AggregateRootSpec.cs" />
     <Compile Include="BaseSpec.cs" />
     <Compile Include="Users\UserCoordinatorSpec.cs" />
-    <Compile Include="Users\UserRootSpec.cs" />
+    <Compile Include="Users\UserSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

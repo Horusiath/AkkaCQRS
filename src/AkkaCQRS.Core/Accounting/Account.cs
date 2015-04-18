@@ -94,19 +94,31 @@ namespace AkkaCQRS.Core.Accounting
                     }
                     else
                     {
-                        //TODO: ammount must be a positive number
+                        Log.Error("Cannot perform deposit on account {0}: money amount is not positive value", _id);
                     }
                 })
                 .With<AccountCommands.Withdraw>(withdraw =>
                 {
-                    if (withdraw.Amount > 0 && withdraw.Amount <= State.Balance)
+                    var sender = Sender;
+                    var withdrawal = new AccountEvents.Withdrawal(_id, withdraw.Amount);
+
+                    // Use defer to await to proceed command until all account events have been
+                    // persisted and handled. This is done mostly, because we don't want to perform
+                    // negative account check while there may be still account balance modifying events
+                    // waiting in mailbox.
+                    Defer(withdrawal, e =>
                     {
-                        Persist(new AccountEvents.Withdrawal(_id, withdraw.Amount));
-                    }
-                    else
-                    {
-                        //TODO: ammount must be a positive number and les than actual balance
-                    }
+                        if (withdraw.Amount > 0 && withdraw.Amount <= State.Balance)
+                        {
+                            Persist(e, sender);
+                        }
+                        else
+                        {
+                            Log.Error("Cannot perform withdrawal from account {0}, because it has a negative balance", _id);
+                            sender.Tell(new NotEnoughtFunds(_id));
+                        }
+                    });
+
                 })
                 .With<AccountCommands.Transfer>(transfer =>
                 {

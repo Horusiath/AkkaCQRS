@@ -70,12 +70,15 @@
     <Compile Include="AddressBook.cs" />
     <Compile Include="AggregateCoordinator.cs" />
     <Compile Include="AggregateRoot.cs" />
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Users\Commands.cs" />
     <Compile Include="Users\Events.cs" />
     <Compile Include="Users\User.cs" />
     <Compile Include="Users\UserCoordinator.cs" />
+    <Compile Include="Users\UserIndex.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

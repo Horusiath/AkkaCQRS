@@ -16,23 +16,15 @@ namespace AkkaCQRS.Core
         public class Register
         {
             public readonly Type ActorType;
-            public readonly ActorPath Path;
+            public readonly ICanTell Ref;
 
-            public Register(Type actorType, ActorPath path)
+            public Register(Type actorType, ICanTell @ref)
             {
                 ActorType = actorType;
-                Path = path;
+                Ref = @ref;
             }
         }
-
-        public sealed class Register<TActor> : Register where TActor : ActorBase
-        {
-            public Register(ActorPath path)
-                : base(typeof(TActor), path)
-            {
-            }
-        }
-
+        
         public class Unregister
         {
             public readonly Type ActorType;
@@ -41,11 +33,6 @@ namespace AkkaCQRS.Core
             {
                 ActorType = actorType;
             }
-        }
-
-        public sealed class Unregister<TActor> : Unregister where TActor : ActorBase
-        {
-            public Unregister() : base(typeof(TActor)) { }
         }
 
         public class Get
@@ -58,20 +45,15 @@ namespace AkkaCQRS.Core
             }
         }
 
-        public sealed class Get<TActor> : Get where TActor : ActorBase
-        {
-            public Get() : base(typeof(TActor)) { }
-        }
-
         public class Found
         {
             public readonly Type ActorType;
-            public readonly ActorPath Path;
+            public readonly ICanTell Ref;
 
-            public Found(Type actorType, ActorPath path)
+            public Found(Type actorType, ICanTell @ref)
             {
                 ActorType = actorType;
-                Path = path;
+                Ref = @ref;
             }
         }
 
@@ -88,17 +70,17 @@ namespace AkkaCQRS.Core
         #endregion
 
         public const string Name = "address-book";
-        private readonly IDictionary<Type, ActorPath> _addresses;
+        private readonly IDictionary<Type, ICanTell> _addresses;
 
-        public AddressBook(IEnumerable<KeyValuePair<Type, ActorPath>> entries = null)
+        public AddressBook(IEnumerable<KeyValuePair<Type, ICanTell>> entries = null)
         {
-            _addresses = new ConcurrentDictionary<Type, ActorPath>(entries ?? Enumerable.Empty<KeyValuePair<Type, ActorPath>>());
+            _addresses = new ConcurrentDictionary<Type, ICanTell>(entries ?? Enumerable.Empty<KeyValuePair<Type, ICanTell>>());
 
-            Receive<Register>(register => _addresses.Add(register.ActorType, register.Path));
+            Receive<Register>(register => _addresses.Add(register.ActorType, register.Ref));
             Receive<Unregister>(unregister => _addresses.Remove(unregister.ActorType));
             Receive<Get>(get =>
             {
-                ActorPath path;
+                ICanTell path;
                 var reply = _addresses.TryGetValue(get.ActorType, out path)
                     ? (object)new Found(get.ActorType, path)
                     : new NotFound(get.ActorType);

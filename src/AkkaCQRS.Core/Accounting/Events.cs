@@ -4,6 +4,16 @@ namespace AkkaCQRS.Core.Accounting
 {
     public interface IAccountEvent : IEvent { }
 
+
+    public sealed class NotEnoughtFunds : IMessage
+    {
+        public readonly Guid AccountId;
+        public NotEnoughtFunds(Guid accountId)
+        {
+            AccountId = accountId;
+        }
+    }
+
     public static class AccountEvents
     {
         public sealed class AccountCreated : IAccountEvent
