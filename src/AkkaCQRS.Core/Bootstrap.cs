@@ -1,5 +1,6 @@
 ﻿using System;
 using Akka.Actor;
+using Akka.Configuration;
 
 namespace AkkaCQRS.Core
 {
@@ -18,7 +19,7 @@ namespace AkkaCQRS.Core
 
         public static void Initialize()
         {
-            _system = ActorSystem.Create("akka-cqrs");
+            _system = ActorSystem.Create("akka-cqrs", ConfigurationFactory.Load());
 
             // we hide all application specific actor system 
             // initializers under the cover of actor system extensions

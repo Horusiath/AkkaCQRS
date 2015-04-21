@@ -9,7 +9,9 @@ using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Owin.StaticFiles.Infrastructure;
+using Newtonsoft.Json.Serialization;
 using Owin;
+using Serilog;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -21,8 +23,15 @@ namespace AkkaCQRS.Web
         {
             Bootstrap.Initialize();
 
+            ConfigureLogger(app);
             ConfigureStaticFiles(app);
             ConfigureWebApi(app);
+        }
+
+        private void ConfigureLogger(IAppBuilder app)
+        {
+            var logger = new LoggerConfiguration().WriteTo.ColoredConsole().MinimumLevel.Debug().CreateLogger();
+            Serilog.Log.Logger = logger;
         }
 
         private void ConfigureStaticFiles(IAppBuilder app)
@@ -38,10 +47,15 @@ namespace AkkaCQRS.Web
         private static void ConfigureWebApi(IAppBuilder app)
         {
             var httpConfig = new HttpConfiguration();
+            httpConfig.MapHttpAttributeRoutes();
             httpConfig.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
-                defaults: new {id = RouteParameter.Optional});
+                defaults: new { id = RouteParameter.Optional });
+
+            var jsonSettings = httpConfig.Formatters.JsonFormatter.SerializerSettings;
+            jsonSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
             app.UseWebApi(httpConfig);
         }
     }

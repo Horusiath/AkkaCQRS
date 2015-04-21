@@ -97,7 +97,7 @@ namespace AkkaCQRS.Core
         /// </summary>
         protected string GetPersistenceId(Guid id)
         {
-            return ChildPrefix + id.ToString("N");
+            return ChildPrefix + "-" + id.ToString("N");
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace AkkaCQRS.Core
         {
             var pid = GetPersistenceId(id);
             var child = Context.Child(pid);
-            if (child != null)
+            if (!child.Equals(ActorRefs.Nobody))
             {
                 if (_terminatingChildren.Contains(child))
                 {

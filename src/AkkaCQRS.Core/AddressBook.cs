@@ -97,7 +97,7 @@ namespace AkkaCQRS.Core
         /// </summary>
         public static ICanTell GetAddressBook(this ActorSystem system)
         {
-            return system.ActorSelection("/" + AddressBook.Name);
+            return system.ActorSelection("/user/" + AddressBook.Name);
         }
     }
 }

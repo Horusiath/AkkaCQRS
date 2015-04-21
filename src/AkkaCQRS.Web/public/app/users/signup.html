@@ -1,0 +1,22 @@
+﻿<div class="row text-center">
+    <div class="col-md-4 well well-sm" style="margin: 0 auto; float: none;">
+        <legend> Sign up!</legend>
+        <form method="post" class="form" role="form" name="signupForm" data-ng-submit="register(user)">
+            <div class="row">
+                <div class="col-xs-6 col-md-6">
+                    <input class="form-control" name="firstname" placeholder="First Name" type="text" data-ng-model="user.firstName" required autofocus>
+                </div>
+                <div class="col-xs-6 col-md-6">
+                    <input class="form-control" name="lastname" placeholder="Last Name" type="text" data-ng-model="user.lastName" required>
+                </div>
+            </div>
+            <input class="form-control" name="email" placeholder="Your Email" type="email" data-ng-model="user.email" required>
+            <input class="form-control" name="password" placeholder="New Password" type="password" data-ng-model="user.password" required>
+            <input class="form-control" name="passwordRepeat" placeholder="Repeat password" type="password" data-ng-model="user.passwordRepeat" required>
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">
+                Sign up
+            </button>
+        </form>
+    </div>
+</div>

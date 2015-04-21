@@ -25,8 +25,10 @@ namespace AkkaCQRS.Core
 
         /// <summary>
         /// Maximum number of events to occur in a row before state will be snapshoted.
+        /// This is useful in scenarios, when actor may have to recover it's from potentially large number of events.
+        /// This way snapshots are made automatically after specific number of events become persisted.
         /// </summary>
-        public const int MaxEventsToSnapshot = 10;
+        public const int MaxEventsToSnapshot = 10;  // in real life this should be greater number
         private int _eventsSinceLastSnapshot = 0;
 
         private ILoggingAdapter _log;
@@ -77,6 +79,10 @@ namespace AkkaCQRS.Core
 
         protected abstract bool OnCommand(object message);
 
+        /// <summary>
+        /// Wrapper method around persistence mechanisms. It persist an event, publishes it through event stream,
+        /// calls aggregate state update and periodically performs snapshotting.
+        /// </summary>
         protected void Persist(IEvent domainEvent, IActorRef sender = null)
         {
             Persist(domainEvent, e =>
@@ -99,6 +105,13 @@ namespace AkkaCQRS.Core
             Context.System.EventStream.Publish(domainEvent);
         }
 
+        /// <summary>
+        /// Update state is used for changing actor's internal state in response to incoming events.
+        /// This method should be idempotent and should never call event persisting methods itself 
+        /// nor generating another commands.
+        /// 
+        /// While in recovering mode, <paramref name="sender"/> is always null.
+        /// </summary>
         protected abstract void UpdateState(IEvent domainEvent, IActorRef sender);
     }
 }

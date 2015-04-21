@@ -13,11 +13,11 @@ namespace AkkaCQRS.Core
             var usersCoordinator = system.ActorOf(Props.Create(() => new UserCoordinator()), "users");
             var usersIndex = system.ActorOf(Props.Create(() => new UserIndex()).WithRouter(new RoundRobinPool(4)), "users-index");
 
-            system.ActorOf(Props.Create(() => new AddressBook(new Dictionary<Type, ICanTell>
+            var addressBook = system.ActorOf(Props.Create(() => new AddressBook(new Dictionary<Type, ICanTell>
             {
                 {typeof(UserCoordinator), usersCoordinator},
                 {typeof(UserIndex), usersIndex},
-            })));
+            })), AddressBook.Name);
         }
     }
 
