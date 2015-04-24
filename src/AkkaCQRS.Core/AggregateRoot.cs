@@ -40,7 +40,7 @@ namespace AkkaCQRS.Core
         
         protected AggregateRoot(string persistenceId)
         {
-            Context.SetReceiveTimeout(DefaultReceiveTimeout);
+            //Context.SetReceiveTimeout(DefaultReceiveTimeout);
 
             _persistenceId = persistenceId;
         }

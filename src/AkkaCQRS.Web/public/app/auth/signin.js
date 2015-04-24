@@ -2,7 +2,7 @@
     'use strict';
 
     app.controller('SigninController', [
-        '$scope', 'Auth', function ($scope, Auth) {
+        '$scope', '$location', 'Auth', function ($scope, $location, Auth) {
             $scope.credentials = {
                 email: '',
                 password: '',
@@ -10,7 +10,9 @@
             };
 
             $scope.signin = function(credentials) {
-                Auth.signin(credentials);
+                Auth.signin(credentials).then(function (signedAs) {
+                    $location.path('/user/' + signedAs.userId);
+                });;
             };
         }
     ]);

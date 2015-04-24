@@ -13,10 +13,7 @@ namespace AkkaCQRS.Web.Controllers.Api
 {
     public class UsersController : ApplicationController
     {
-        public UsersController()
-        {
-        }
-
+        [HttpGet]
         public async Task<UserEntity> Get(Guid id)
         {
             var users = await GetActor<UserCoordinator>();
@@ -44,7 +41,17 @@ namespace AkkaCQRS.Web.Controllers.Api
         [Route("api/users/signin")]
         public async Task<UserInfo> PostSignin(UserCommands.SignInUser request)
         {
+            var usersIndex = await GetActor<UserIndex>();
+            var emailReply = await usersIndex.Ask<UserIndex.IReply>(new UserIndex.GetUserByEmail(request.Email), DefaultTimeout);
+
+            // cannot register user using email, which has already been used
+            if (emailReply is UserIndex.UserFound)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+
             var users = await GetActor<UserCoordinator>();
+            //TODO: sign in user based on UserId returned from user index
             var entity = await users.Ask<UserEntity>(request, DefaultTimeout);
             var userInfo = new UserInfo(entity.Id, entity.FirstName, entity.LastName, entity.Email, entity.AccountsIds.ToArray());
             return userInfo;

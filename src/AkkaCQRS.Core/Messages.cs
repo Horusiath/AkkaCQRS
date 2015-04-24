@@ -13,7 +13,7 @@ namespace AkkaCQRS.Core
 
     public interface IEvent : IMessage { }
 
-    public sealed class GetState : IMessage
+    public sealed class GetState : ICommand
     {
         public readonly Guid Id;
 

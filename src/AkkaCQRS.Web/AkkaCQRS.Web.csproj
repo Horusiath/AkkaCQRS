@@ -135,21 +135,24 @@
     <Content Include="public\app\app.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="public\app\users\auth.js">
+    <Content Include="public\app\auth\auth.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="public\app\users\signin.html">
+    <Content Include="public\app\auth\signin.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="public\app\users\signin.js">
+    <Content Include="public\app\auth\signin.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="public\app\users\signup.html">
+    <Content Include="public\app\auth\signup.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="public\app\users\signup.js">
+    <Content Include="public\app\auth\signup.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="public\app\user\userDetails.css" />
+    <Content Include="public\app\user\userDetails.html" />
+    <Content Include="public\app\user\userDetails.js" />
     <Content Include="public\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -178,6 +181,7 @@
     <Folder Include="Actors\" />
     <Folder Include="Content\" />
     <Folder Include="Hubs\" />
+    <Folder Include="public\app\account\" />
     <Folder Include="public\js\" />
     <Folder Include="public\views\" />
   </ItemGroup>

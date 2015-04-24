@@ -25,6 +25,11 @@ namespace AkkaCQRS.Core.Users
                     var userId = Guid.NewGuid();
                     ForwardCommand(userId, message as UserCommands.RegisterUser);
                 }
+                else if (message is GetState)
+                {
+                    var getState = message as GetState;
+                    ForwardCommand(getState.Id, getState);
+                }
                 else if (message is IAddressed && message is IUserCommand)
                 {
                     var addressed = message as IAddressed;

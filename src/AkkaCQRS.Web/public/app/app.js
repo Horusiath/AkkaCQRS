@@ -9,8 +9,12 @@
                     templateUrl: 'app/auth/signup.html'
                 })
                 .when('/signin', {
-                    controller: 'SignInController',
+                    controller: 'SigninController',
                     templateUrl: 'app/auth/signin.html'
+                })
+                .when('/user/:id', {
+                    controller: 'UserDetailsController',
+                    templateUrl: 'app/user/userDetails.html'
                 });
         }]);
 
