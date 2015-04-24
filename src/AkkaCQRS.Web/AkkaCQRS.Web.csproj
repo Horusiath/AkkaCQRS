@@ -132,6 +132,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="public\app\account\account-history.html" />
+    <Content Include="public\app\account\account-history.js" />
     <Content Include="public\app\app.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -150,9 +152,9 @@
     <Content Include="public\app\auth\signup.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="public\app\user\userDetails.css" />
-    <Content Include="public\app\user\userDetails.html" />
-    <Content Include="public\app\user\userDetails.js" />
+    <Content Include="public\app\user\user-details.css" />
+    <Content Include="public\app\user\user-details.html" />
+    <Content Include="public\app\user\user-details.js" />
     <Content Include="public\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -161,9 +163,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Api\AccountsController.cs" />
     <Compile Include="Controllers\Api\ApplicationController.cs" />
     <Compile Include="Controllers\Api\UsersController.cs" />
     <Compile Include="Infrastructure\Async\AsyncHelper.cs" />
+    <Compile Include="Models\Accounts\AccountInfo.cs" />
+    <Compile Include="Models\Accounts\AccountRequests.cs" />
     <Compile Include="Models\Users\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -181,7 +186,6 @@
     <Folder Include="Actors\" />
     <Folder Include="Content\" />
     <Folder Include="Hubs\" />
-    <Folder Include="public\app\account\" />
     <Folder Include="public\js\" />
     <Folder Include="public\views\" />
   </ItemGroup>

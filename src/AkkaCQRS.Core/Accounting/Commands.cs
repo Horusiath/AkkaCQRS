@@ -6,22 +6,15 @@ namespace AkkaCQRS.Core.Accounting
 
     public static class AccountCommands
     {
-        public sealed class CreateAccount : IAccountCommand, IAddressed
+        public sealed class CreateAccount : IAccountCommand
         {
-            public readonly Guid AccountId;
             public readonly Guid OwnerId;
             public readonly decimal Balance;
 
             public CreateAccount(Guid accountId, Guid ownerId, decimal balance)
             {
-                AccountId = accountId;
                 OwnerId = ownerId;
                 Balance = balance;
-            }
-
-            public Guid RecipientId
-            {
-                get { return AccountId; }
             }
         }
         public sealed class DeactivateAccount : IAccountCommand, IAddressed

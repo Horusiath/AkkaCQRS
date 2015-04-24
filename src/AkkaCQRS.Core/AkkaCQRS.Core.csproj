@@ -64,6 +64,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accounting\Account.cs" />
+    <Compile Include="Accounting\AccountCoordinator.cs" />
+    <Compile Include="Accounting\AccountHistoryView.cs" />
     <Compile Include="Accounting\AccountingService.cs" />
     <Compile Include="Accounting\Commands.cs" />
     <Compile Include="Accounting\Events.cs" />

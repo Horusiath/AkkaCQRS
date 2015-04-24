@@ -4,6 +4,7 @@ using Akka.Actor;
 
 namespace AkkaCQRS.Core.Accounting
 {
+    public delegate DateTime Clock();
 
     public class AccountEntity : IEntity<Guid>
     {
@@ -23,6 +24,11 @@ namespace AkkaCQRS.Core.Accounting
 
     public class Account : AggregateRoot<AccountEntity>
     {
+        /// <summary>
+        /// Custom notion of date time provider, easy to replace.
+        /// </summary>
+        public static readonly Clock Clock = () => DateTime.UtcNow;
+
         private readonly Guid _id;
 
         public Account(Guid id)
@@ -57,6 +63,7 @@ namespace AkkaCQRS.Core.Accounting
                 {
                     State = new AccountEntity(e.Id, e.OwnerId, true, e.Balance);
                     Context.Become(Active);
+                    if (sender != null) sender.Tell(State);
 
                     Log.Info("Account with id {0} and balance {1} has been created", e.Id, e.Balance);
                 })
@@ -74,7 +81,7 @@ namespace AkkaCQRS.Core.Accounting
             return message.Match()
                 .With<AccountCommands.CreateAccount>(create =>
                 {
-                    Persist(new AccountEvents.AccountCreated(_id, create.OwnerId, create.Balance));
+                    Persist(new AccountEvents.AccountCreated(_id, create.OwnerId, create.Balance, Clock()), Sender);
                 })
                 .WasHandled;
         }
@@ -84,13 +91,13 @@ namespace AkkaCQRS.Core.Accounting
             return base.ReceiveCommand(message) || message.Match()
                 .With<AccountCommands.DeactivateAccount>(deactivate =>
                 {
-                    Persist(new AccountEvents.AccountDeactivated(deactivate.AccountId));
+                    Persist(new AccountEvents.AccountDeactivated(deactivate.AccountId, Clock()));
                 })
                 .With<AccountCommands.Deposit>(deposit =>
                 {
                     if (deposit.Amount > 0)
                     {
-                        Persist(new AccountEvents.Deposited(_id, deposit.Amount));
+                        Persist(new AccountEvents.Deposited(_id, deposit.Amount, Clock()));
                     }
                     else
                     {
@@ -100,7 +107,7 @@ namespace AkkaCQRS.Core.Accounting
                 .With<AccountCommands.Withdraw>(withdraw =>
                 {
                     var sender = Sender;
-                    var withdrawal = new AccountEvents.Withdrawal(_id, withdraw.Amount);
+                    var withdrawal = new AccountEvents.Withdrawal(_id, withdraw.Amount, Clock());
 
                     // Use defer to await to proceed command until all account events have been
                     // persisted and handled. This is done mostly, because we don't want to perform

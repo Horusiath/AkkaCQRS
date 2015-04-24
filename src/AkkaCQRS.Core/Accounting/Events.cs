@@ -4,7 +4,6 @@ namespace AkkaCQRS.Core.Accounting
 {
     public interface IAccountEvent : IEvent { }
 
-
     public sealed class NotEnoughtFunds : IMessage
     {
         public readonly Guid AccountId;
@@ -21,22 +20,26 @@ namespace AkkaCQRS.Core.Accounting
             public readonly Guid Id;
             public readonly Guid OwnerId;
             public readonly decimal Balance;
+            public readonly DateTime Timestamp;
 
-            public AccountCreated(Guid id, Guid ownerId, decimal balance)
+            public AccountCreated(Guid id, Guid ownerId, decimal balance, DateTime timestamp)
             {
                 Id = id;
                 OwnerId = ownerId;
                 Balance = balance;
+                Timestamp = timestamp;
             }
         }
 
         public sealed class AccountDeactivated : IAccountEvent
         {
             public readonly Guid Id;
+            public readonly DateTime Timestamp;
 
-            public AccountDeactivated(Guid id)
+            public AccountDeactivated(Guid id, DateTime timestamp)
             {
                 Id = id;
+                Timestamp = timestamp;
             }
         }
 
@@ -44,11 +47,13 @@ namespace AkkaCQRS.Core.Accounting
         {
             public readonly Guid Id;
             public readonly decimal Amount;
+            public readonly DateTime Timestamp;
 
-            public Deposited(Guid id, decimal amount)
+            public Deposited(Guid id, decimal amount, DateTime timestamp)
             {
                 Id = id;
                 Amount = amount;
+                Timestamp = timestamp;
             }
         }
 
@@ -57,12 +62,14 @@ namespace AkkaCQRS.Core.Accounting
             public readonly Guid FromId;
             public readonly Guid ToId;
             public readonly decimal Amount;
+            public readonly DateTime Timestamp;
 
-            public Transfered(Guid fromId, Guid toId, decimal amount)
+            public Transfered(Guid fromId, Guid toId, decimal amount, DateTime timestamp)
             {
                 FromId = fromId;
                 ToId = toId;
                 Amount = amount;
+                Timestamp = timestamp;
             }
         }
 
@@ -70,11 +77,13 @@ namespace AkkaCQRS.Core.Accounting
         {
             public readonly Guid Id;
             public readonly decimal Amount;
+            public readonly DateTime Timestamp;
 
-            public Withdrawal(Guid id, decimal amount)
+            public Withdrawal(Guid id, decimal amount, DateTime timestamp)
             {
                 Id = id;
                 Amount = amount;
+                Timestamp = timestamp;
             }
         }
     }

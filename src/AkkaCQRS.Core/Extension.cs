@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Routing;
+using AkkaCQRS.Core.Accounting;
 using AkkaCQRS.Core.Users;
 
 namespace AkkaCQRS.Core
@@ -11,11 +12,13 @@ namespace AkkaCQRS.Core
         public CqrsExtension(ExtendedActorSystem system)
         {
             var usersCoordinator = system.ActorOf(Props.Create(() => new UserCoordinator()), "users");
+            var accountCoordinator = system.ActorOf(Props.Create(() => new AccountCoordinator()), "accounts");
             var usersIndex = system.ActorOf(Props.Create(() => new UserIndex()).WithRouter(new RoundRobinPool(4)), "users-index");
 
             var addressBook = system.ActorOf(Props.Create(() => new AddressBook(new Dictionary<Type, ICanTell>
             {
                 {typeof(UserCoordinator), usersCoordinator},
+                {typeof(AccountCoordinator), accountCoordinator},
                 {typeof(UserIndex), usersIndex},
             })), AddressBook.Name);
         }

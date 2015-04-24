@@ -14,7 +14,7 @@
                 })
                 .when('/user/:id', {
                     controller: 'UserDetailsController',
-                    templateUrl: 'app/user/userDetails.html'
+                    templateUrl: 'app/user/user-details.html'
                 });
         }]);
 
