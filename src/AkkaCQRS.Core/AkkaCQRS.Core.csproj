@@ -69,6 +69,7 @@
     <Compile Include="Accounting\AccountingService.cs" />
     <Compile Include="Accounting\Commands.cs" />
     <Compile Include="Accounting\Events.cs" />
+    <Compile Include="Accounting\TransactionCoordinator.cs" />
     <Compile Include="AddressBook.cs" />
     <Compile Include="AggregateCoordinator.cs" />
     <Compile Include="AggregateRoot.cs" />
