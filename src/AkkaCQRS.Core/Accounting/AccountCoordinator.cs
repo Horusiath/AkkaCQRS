@@ -5,7 +5,8 @@ namespace AkkaCQRS.Core.Accounting
 {
     public class AccountCoordinator : AggregateCoordinator
     {
-        public AccountCoordinator() : base("account")
+        public AccountCoordinator()
+            : base("account")
         {
         }
 
@@ -19,7 +20,19 @@ namespace AkkaCQRS.Core.Accounting
             var handled = base.Receive(message);
             if (!handled)
             {
-                if (message is AccountCommands.CreateAccount)
+                if (message is AccountCommands.Transfer)
+                {
+                    var transfer = message as AccountCommands.Transfer;
+                    var sender = Retrieve(transfer.FromAccountId);
+                    var recipient = Retrieve(transfer.ToAccountId);
+
+                    var transactionId = Guid.NewGuid();
+                    var transaction = Context.ActorOf(Props.Create(() => new TransactionCoordinator()), "transfer-" + transactionId.ToString("N"));
+                    var payload = new PendingTransfer(transactionId, sender, recipient, transfer.Amount);
+                    transaction.Tell(new TransactionCoordinator.BeginTransaction(transactionId, new[] { sender, recipient }, payload));
+                    //TODO: what if AccountCoordinator will harvest transaction participants before transaction ends?
+                }
+                else if (message is AccountCommands.CreateAccount)
                 {
                     var userId = Guid.NewGuid();
                     ForwardCommand(userId, message as AccountCommands.CreateAccount);

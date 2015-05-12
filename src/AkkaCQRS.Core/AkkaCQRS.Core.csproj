@@ -88,6 +88,9 @@
     <Folder Include="ValueObjects\" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="akka-cqrs.conf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -10,7 +10,7 @@ namespace AkkaCQRS.Core.Accounting
     /// Account log represents single transaction made from particular account.
     /// </summary>
     [Serializable]
-    public sealed class AccountLog 
+    public sealed class AccountLog
     {
         internal class AccountLogTimestampComparer : IComparer<AccountLog>
         {
@@ -26,7 +26,7 @@ namespace AkkaCQRS.Core.Accounting
         /// <summary>
         /// Default comparer sorting account logs by their timestamp in descending order.
         /// </summary>
-        public static readonly IComparer<AccountLog> TimestampComparer = new AccountLogTimestampComparer(); 
+        public static readonly IComparer<AccountLog> TimestampComparer = new AccountLogTimestampComparer();
 
         /// <summary>
         /// Transaction date.
@@ -112,18 +112,13 @@ namespace AkkaCQRS.Core.Accounting
                 {
                     Sender.Tell(History.Skip(page.Skip).Take(page.Take).ToArray(), Self);
                 })
-                .With<AccountEvents.Transfered>(e =>
+                .With<AccountEvents.TransferedWithdrawal>(e =>
                 {
-                    if (_id == e.FromId)
-                    {
-                        // current account was transferer
-                        RecordWithdrawal(e.FromId, e.Amount, e.Timestamp);
-                    }
-                    else if (_id == e.ToId)
-                    {
-                        // current account was transfer recipient
-                        RecordDeposit(e.ToId, e.Amount, e.Timestamp);
-                    }
+                    RecordWithdrawal(e.FromId, e.Amount, e.Timestamp);
+                })
+                .With<AccountEvents.TransferedDeposit>(e =>
+                {
+                    RecordDeposit(e.ToId, e.Amount, e.Timestamp);
                 })
                 .With<AccountEvents.Withdrawal>(e =>
                 {

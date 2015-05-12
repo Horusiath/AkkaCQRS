@@ -138,6 +138,14 @@ namespace AkkaCQRS.Core
         public abstract Props GetProps(Guid id);
 
         /// <summary>
+        /// Retrieves an actor with provided <paramref name="id"/>. Respawns actor if necessary.
+        /// </summary>
+        protected IActorRef Retrieve(Guid id)
+        {
+            return Recreate(id, GetPersistenceId(id));
+        }
+
+        /// <summary>
         /// Gets an child actor identified by <paramref name="pid"/> or creates it.
         /// </summary>
         private IActorRef Recreate(Guid id, string pid)

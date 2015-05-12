@@ -57,17 +57,32 @@ namespace AkkaCQRS.Core.Accounting
             }
         }
 
-        public sealed class Transfered : IAccountEvent
+        public sealed class TransferedWithdrawal : IAccountEvent
         {
             public readonly Guid FromId;
-            public readonly Guid ToId;
+            public readonly Guid TransactionId;
             public readonly decimal Amount;
             public readonly DateTime Timestamp;
 
-            public Transfered(Guid fromId, Guid toId, decimal amount, DateTime timestamp)
+            public TransferedWithdrawal(Guid fromId, Guid transactionId, decimal amount, DateTime timestamp)
             {
                 FromId = fromId;
+                TransactionId = transactionId;
+                Amount = amount;
+                Timestamp = timestamp;
+            }
+        }
+        public sealed class TransferedDeposit : IAccountEvent
+        {
+            public readonly Guid ToId;
+            public readonly Guid TransactionId;
+            public readonly decimal Amount;
+            public readonly DateTime Timestamp;
+
+            public TransferedDeposit(Guid toId, Guid transactionId, decimal amount, DateTime timestamp)
+            {
                 ToId = toId;
+                TransactionId = transactionId;
                 Amount = amount;
                 Timestamp = timestamp;
             }

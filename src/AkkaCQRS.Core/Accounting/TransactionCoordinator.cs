@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Akka;
 using Akka.Actor;
+using Akka.Configuration;
 
 namespace AkkaCQRS.Core.Accounting
 {
@@ -27,8 +28,30 @@ namespace AkkaCQRS.Core.Accounting
         protected TransactionAbortedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 
+    internal class TransactionSettings
+    {
+        public readonly TimeSpan TransactionTimeout;
+
+        public TransactionSettings(Config config)
+        {
+            TransactionTimeout = config.GetTimeSpan("transaction-timeout");
+        }
+    }
+
     /// <summary>
-    /// Distributed transaction coordinator used for two-phase committing.
+    /// Distributed transaction coordinator used for two-phase committing. 
+    /// Algorithm taken from: http://en.wikipedia.org/wiki/Two-phase_commit_protocol
+    /// 
+    /// Coordinator                                         Participants
+    ///                         BEGIN TRANSACTION
+    ///                 -------------------------------->
+    ///                         CONTINUE/ABORT              prepare*/abort*
+    ///                 <-------------------------------
+    /// commit*/abort*          COMMIT/ROLLBACK
+    ///                 -------------------------------->
+    ///                         ACKNOWLEDGMENT              commit*/abort*
+    ///                 <--------------------------------  
+    /// end
     /// </summary>
     public class TransactionCoordinator : ActorBase
     {
@@ -48,16 +71,14 @@ namespace AkkaCQRS.Core.Accounting
         public sealed class BeginTransaction : ITransactionMessage
         {
             public readonly Guid Id;
-            public readonly IActorRef Sender;
-            public readonly IActorRef Recipient;
-            public readonly decimal Amount;
+            public readonly IEnumerable<IActorRef> Participants;
+            public readonly object Payload;
 
-            public BeginTransaction(Guid transactionId, IActorRef sender, IActorRef recipient, decimal amount)
+            public BeginTransaction(Guid id, IEnumerable<IActorRef> participants, object payload)
             {
-                Sender = sender;
-                Recipient = recipient;
-                Amount = amount;
-                Id = transactionId;
+                Id = id;
+                Participants = participants;
+                Payload = payload;
             }
 
             public Guid TransactionId { get { return Id; } }
@@ -157,12 +178,18 @@ namespace AkkaCQRS.Core.Accounting
 
         private Guid _currentTransactionId;
 
+        private readonly TransactionSettings _settings;
         private readonly ISet<IActorRef> _participants;
         private ISet<IActorRef> _phaseOnePending;
         private ISet<IActorRef> _phaseTwoPending;
 
         public TransactionCoordinator()
         {
+            _settings = new TransactionSettings(Context.System.Settings.Config.GetConfig("akka.akka-cqrs"));
+
+            // set inactivity timeout to be able to send rollback to transaction participants
+            SetReceiveTimeout(_settings.TransactionTimeout);
+
             _currentTransactionId = Guid.Empty;
             _participants = new HashSet<IActorRef> { };
             Become(Ready);
@@ -175,7 +202,7 @@ namespace AkkaCQRS.Core.Accounting
                 {
                     _currentTransactionId = tx.TransactionId;
 
-                    var participants = new HashSet<IActorRef> { tx.Sender, tx.Recipient };
+                    var participants = new HashSet<IActorRef>(tx.Participants);
                     _participants.UnionWith(participants);
                     _phaseOnePending = participants;
 
@@ -257,6 +284,7 @@ namespace AkkaCQRS.Core.Accounting
                             Become(Ready);
                         }
                     }
+                    else Unhandled(ack);
                 })
                 .WasHandled;
         }
@@ -280,6 +308,15 @@ namespace AkkaCQRS.Core.Accounting
 
                     return true;
                 }
+            }
+            else if (message is ReceiveTimeout)
+            {
+                foreach (var participant in _participants)
+                {
+                    participant.Tell(new Rollback(_currentTransactionId, new Exception(string.Format("Transaction {0} has reached it's ACK timeout", _currentTransactionId))));
+                }
+                
+                Context.Stop(Self);
             }
 
             return false;
