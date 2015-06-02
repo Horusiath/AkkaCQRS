@@ -53,6 +53,13 @@ namespace AkkaCQRS.Core.Accounting
     ///                 <--------------------------------  
     /// end
     /// </summary>
+    /// <remarks>
+    /// In real life scenario this may be not the best possible way of doing money transfers.
+    /// 1. Two phase commit is not the best for performance - however current implementation allows <see cref="Account"/> actors 
+    /// to have multiple concurrent transaction in progress until total transaction amount doesn't exceed the account balance.
+    /// 2. This class is not a persistent actor - this may be problem in case when it possibly dies in mid of the transaction. 
+    /// Then account actors has to handle the rollback behavior.
+    /// </remarks>
     public class TransactionCoordinator : ActorBase
     {
         #region messages

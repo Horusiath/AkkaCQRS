@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using Akka.Actor;
 using Akka.Event;
+using Akka.Monitoring;
 using Akka.Persistence;
 
 namespace AkkaCQRS.Core
@@ -50,6 +51,8 @@ namespace AkkaCQRS.Core
 
         protected override bool ReceiveRecover(object message)
         {
+            Context.IncrementMessagesReceived();
+
             if (message is SnapshotOffer)
             {
                 var offeredState = ((SnapshotOffer) message).Snapshot as TEntity;
@@ -68,6 +71,8 @@ namespace AkkaCQRS.Core
 
         protected override bool ReceiveCommand(object message)
         {
+            Context.IncrementMessagesReceived();
+
             if (message is GetState)
             {
                 Sender.Tell(State, Self);
@@ -113,5 +118,18 @@ namespace AkkaCQRS.Core
         /// While in recovering mode, <paramref name="sender"/> is always null.
         /// </summary>
         protected abstract void UpdateState(IEvent domainEvent, IActorRef sender);
+
+        // monitoring extensions
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
+            base.PostStop();
+        }
+
+        protected override void PreStart()
+        {
+            Context.IncrementActorCreated();
+            base.PreStart();
+        }
     }
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Configuration;
+using Akka.Monitoring;
+using Akka.Monitoring.StatsD;
 using Akka.Routing;
 using AkkaCQRS.Core.Accounting;
 using AkkaCQRS.Core.Users;
@@ -14,6 +16,8 @@ namespace AkkaCQRS.Core
         {
             var config = ConfigurationFactory.FromResource<CqrsExtension>("AkkaCQRS.Core.akka-cqrs.conf");
             system.Settings.InjectTopLevelFallback(config);
+
+            ActorMonitoringExtension.RegisterMonitor(system, new ActorStatsDMonitor());
 
             var usersCoordinator = system.ActorOf(Props.Create(() => new UserCoordinator()), "users");
             var accountCoordinator = system.ActorOf(Props.Create(() => new AccountCoordinator()), "accounts");
