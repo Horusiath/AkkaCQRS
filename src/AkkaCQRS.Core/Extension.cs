@@ -12,7 +12,8 @@ namespace AkkaCQRS.Core
     {
         public CqrsExtension(ExtendedActorSystem system)
         {
-            system.Settings.InjectTopLevelFallback(ConfigurationFactory.FromResource<CqrsExtension>("akka-cqrs"));
+            var config = ConfigurationFactory.FromResource<CqrsExtension>("AkkaCQRS.Core.akka-cqrs.conf");
+            system.Settings.InjectTopLevelFallback(config);
 
             var usersCoordinator = system.ActorOf(Props.Create(() => new UserCoordinator()), "users");
             var accountCoordinator = system.ActorOf(Props.Create(() => new AccountCoordinator()), "accounts");

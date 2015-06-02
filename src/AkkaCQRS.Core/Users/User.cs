@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using Akka;
 using Akka.Actor;
-using AkkaCQRS.Core.Accounting;
-using DevOne.Security.Cryptography.BCrypt;
-
 namespace AkkaCQRS.Core.Users
 {
     public class UserEntity : IEntity<Guid>
@@ -156,12 +153,12 @@ namespace AkkaCQRS.Core.Users
 
         private static bool ValidatePassword(UserEntity user, string password)
         {
-            return BCryptHelper.CheckPassword(password, user.PasswordHash);
+            return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
         }
 
         private static string HashPassword(string password)
         {
-            return BCryptHelper.HashPassword(password, BCryptHelper.GenerateSalt());
+            return BCrypt.Net.BCrypt.HashPassword(password, BCrypt.Net.BCrypt.GenerateSalt());
         }
     }
 }

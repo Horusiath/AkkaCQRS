@@ -58,19 +58,21 @@ namespace AkkaCQRS.Tests.Accounting
                 {
                     config.Receive<TransactionCoordinator.BeginTransaction>((transaction, context) => context.Sender.Tell(new TransactionCoordinator.Continue(transaction.TransactionId)));
                     config.Receive<TransactionCoordinator.Commit>((commit, context) => TestActor.Forward(commit));
+                    config.Receive<TransactionCoordinator.Rollback>((rollback, context) => TestActor.Forward(rollback));
                 });
             var p2 = ActorOf(config =>
                 {
                     config.Receive<TransactionCoordinator.BeginTransaction>((transaction, context) => 
                         context.Sender.Tell(new TransactionCoordinator.Abort(transaction.TransactionId, new Exception("boom"))));
-                    config.Receive<TransactionCoordinator.Rollback>((commit, context) => TestActor.Forward(commit.TransactionId));
+                    config.Receive<TransactionCoordinator.Commit>((commit, context) => TestActor.Forward(commit));
+                    config.Receive<TransactionCoordinator.Rollback>((rollback, context) => TestActor.Forward(rollback));
                 });
 
             var beginTransaction = new TransactionCoordinator.BeginTransaction(_transactionId, new[] { p1, p2 }, null);
             _transaction.Tell(beginTransaction);
 
-            ExpectMsg<TransactionCoordinator.Commit>(e => e.TransactionId == _transactionId);
-            ExpectMsg<TransactionCoordinator.Rollback>(e => e.TransactionId == _transactionId && e.Reason.Message == "boom");
+            ExpectMsg<TransactionCoordinator.Rollback>(e => e.TransactionId == _transactionId);
+            ExpectMsg<TransactionCoordinator.Rollback>(e => e.TransactionId == _transactionId);
             ExpectNoMsg();
         }
     }
