@@ -11,11 +11,13 @@ namespace AkkaCQRS.Core.Users
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
+        public bool IsSigned { get; set; }
 
         public ISet<Guid> AccountsIds { get; set; }
 
         public UserEntity()
         {
+            IsSigned = false;
             AccountsIds = new HashSet<Guid>();
         }
 
@@ -39,7 +41,7 @@ namespace AkkaCQRS.Core.Users
             : base("user-" + id.ToString("N"))
         {
             _id = id;
-            
+
             // start in uninitialized state
             Context.Become(Uninitialized);
         }
@@ -48,6 +50,13 @@ namespace AkkaCQRS.Core.Users
         /// We immediately switch to <see cref="Uninitialized"/> at the beginning, so this method is empty.
         /// </summary>
         protected override bool OnCommand(object message) { return false; }
+
+        protected override void OnReplaySuccess()
+        {
+            if (State == null) Become(Uninitialized);
+            else if (State.IsSigned) Become(SignedIn);
+            else Become(Initialized);
+        }
 
         protected override void UpdateState(IEvent domainEvent, IActorRef sender)
         {
@@ -64,6 +73,7 @@ namespace AkkaCQRS.Core.Users
                 .With<UserEvents.PasswordReset>(e => State.PasswordHash = e.NewPasswordHash)
                 .With<UserEvents.UserSignedIn>(e =>
                 {
+                    State.IsSigned = true;
                     Context.Become(SignedIn);
                     if (sender != null) sender.Tell(State);
 
@@ -71,6 +81,7 @@ namespace AkkaCQRS.Core.Users
                 })
                 .With<UserEvents.UserSignedOut>(e =>
                 {
+                    State.IsSigned = false;
                     Context.Become(Initialized);
                 })
                 .With<UserEvents.AccountCreated>(e =>
@@ -110,7 +121,7 @@ namespace AkkaCQRS.Core.Users
             return base.ReceiveCommand(message) || message.Match()
                 .With<UserCommands.SignInUser>(signIn =>
                 {
-                    if (string.Equals(State.Email, signIn.Email, StringComparison.InvariantCultureIgnoreCase) 
+                    if (string.Equals(State.Email, signIn.Email, StringComparison.InvariantCultureIgnoreCase)
                         && ValidatePassword(State, signIn.Password))
                     {
                         Persist(new UserEvents.UserSignedIn(_id), Sender);
@@ -147,6 +158,10 @@ namespace AkkaCQRS.Core.Users
                         Log.Error("Unauthorized user sign in. User id: {0}", _id);
                         Sender.Tell(Unauthorized.Message(change));
                     }
+                })
+                .With<UserCommands.SignOutUser>(signOut =>
+                {
+                    Persist(new UserEvents.UserSignedOut(signOut.RecipientId), Sender);
                 })
                 .WasHandled;
         }

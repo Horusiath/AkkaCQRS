@@ -51,7 +51,7 @@ namespace AkkaCQRS.Core
 
         protected override bool ReceiveRecover(object message)
         {
-            Context.IncrementMessagesReceived();
+            //Context.IncrementMessagesReceived();
 
             if (message is SnapshotOffer)
             {
@@ -71,7 +71,7 @@ namespace AkkaCQRS.Core
 
         protected override bool ReceiveCommand(object message)
         {
-            Context.IncrementMessagesReceived();
+            //Context.IncrementMessagesReceived();
 
             if (message is GetState)
             {
@@ -122,13 +122,13 @@ namespace AkkaCQRS.Core
         // monitoring extensions
         protected override void PostStop()
         {
-            Context.IncrementActorStopped();
+            //Context.IncrementActorStopped();
             base.PostStop();
         }
 
         protected override void PreStart()
         {
-            Context.IncrementActorCreated();
+            //Context.IncrementActorCreated();
             base.PreStart();
         }
     }

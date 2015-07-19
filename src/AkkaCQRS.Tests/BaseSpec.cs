@@ -1,4 +1,4 @@
-﻿using Akka.TestKit.Xunit;
+﻿using Akka.TestKit.Xunit2;
 using AkkaCQRS.Core;
 
 namespace AkkaCQRS.Tests

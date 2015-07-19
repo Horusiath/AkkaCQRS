@@ -73,6 +73,13 @@ namespace AkkaCQRS.Core.Accounting
             return false;
         }
 
+        protected override void OnReplaySuccess()
+        {
+            if (State == null) Become(Uninitialized);
+            else if (State.IsActive) Become(Active);
+            else Become(Deactivated);
+        }
+
         protected override void UpdateState(IEvent domainEvent, IActorRef sender)
         {
             domainEvent.Match()

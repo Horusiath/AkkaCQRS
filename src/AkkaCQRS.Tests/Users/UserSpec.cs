@@ -108,6 +108,51 @@ namespace AkkaCQRS.Tests.Users
 
         #endregion
 
+        [Fact]
+        public void Initialized_User_should_remain_in_Initialized_behavior_upon_recovery()
+        {
+            // check if user starts with Uninitialized behavior
+            _userRef.Tell(new UserCommands.RegisterUser(fname, lname, email, password), TestActor);
+            ExpectMsg<UserEntity>(u => u.Id == _userId && !u.IsSigned);
+
+            // now user is Initialized, lets kill it...
+            Watch(_userRef);
+            _userRef.Tell(PoisonPill.Instance);
+            ExpectTerminated(_userRef);
+
+            // ...and try to resurect
+            _userRef = ActorOf(() => new User(_userId));
+
+            // try to sign in user - this message is responded only in Initialized behavior
+            _userRef.Tell(new UserCommands.SignInUser(email, password), TestActor);
+            ExpectMsg<UserEntity>(u => u.Id == _userId && u.IsSigned);
+        }
+
+        [Fact]
+        public void Signed_User_should_remain_in_Signed_behavior_upon_recovery()
+        {
+            _userRef.Tell(new UserCommands.RegisterUser(fname, lname, email, password), TestActor);
+            ExpectMsg<UserEntity>(u => u.Id == _userId && !u.IsSigned);
+            _userRef.Tell(new UserCommands.SignInUser(email, password), TestActor);
+            ExpectMsg<UserEntity>(u => u.Id == _userId && u.IsSigned);
+
+            // right now user is in SignedIn behavior, kill it and resurect
+            Watch(_userRef);
+            _userRef.Tell(PoisonPill.Instance);
+            ExpectTerminated(_userRef);
+
+            _userRef = ActorOf(() => new User(_userId));
+            // check user state
+            _userRef.Tell(new GetState(_userId), TestActor);
+            ExpectMsg<UserEntity>(u => u.IsSigned && u.Id == _userId);
+
+            // try to sign out user and verify it's state - only SignedIn behavior alters it
+            _userRef.Tell(new UserCommands.SignOutUser(_userId), TestActor);
+            // check user state
+            _userRef.Tell(new GetState(_userId), TestActor);
+            ExpectMsg<UserEntity>(u => !u.IsSigned && u.Id == _userId);
+        }
+
         private void Subscribe<T>(IActorRef subscriber)
         {
             Sys.EventStream.Subscribe(subscriber, typeof (T));

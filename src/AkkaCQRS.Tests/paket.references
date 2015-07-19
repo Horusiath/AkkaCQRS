@@ -1,4 +1,4 @@
 ﻿Akka
 Akka.Persistence
 Akka.Monitoring.StatsD
-Akka.TestKit.Xunit
+Akka.TestKit.Xunit2

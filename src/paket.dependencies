@@ -3,7 +3,7 @@ source https://nuget.org/api/v2
 nuget Akka.Logger.Serilog
 nuget Akka.Monitoring.StatsD
 nuget Akka.Persistence
-nuget Akka.TestKit.Xunit
+nuget Akka.TestKit.Xunit2
 nuget BCrypt-Official
 nuget Microsoft.AspNet.SignalR.Owin
 nuget Microsoft.Owin.Host.SystemWeb
