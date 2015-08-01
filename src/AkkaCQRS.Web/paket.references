@@ -5,3 +5,4 @@ Akka.Logger.Serilog
 Microsoft.AspNet.SignalR.Owin
 Microsoft.Owin.StaticFiles
 Microsoft.Owin.Host.SystemWeb
+Microsoft.AspNet.Mvc

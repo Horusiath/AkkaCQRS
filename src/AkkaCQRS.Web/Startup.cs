@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
+﻿using System.IO;
 using System.Web;
 using System.Web.Http;
+using System.Web.Mvc;
+using System.Web.Routing;
 using AkkaCQRS.Core;
 using AkkaCQRS.Web;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
-using Microsoft.Owin.StaticFiles.Infrastructure;
 using Newtonsoft.Json.Serialization;
 using Owin;
 using Serilog;
@@ -24,14 +23,20 @@ namespace AkkaCQRS.Web
             Bootstrap.Initialize();
 
             ConfigureLogger(app);
-            ConfigureStaticFiles(app);
+            ConfigureMvc(RouteTable.Routes);
             ConfigureWebApi(app);
+            ConfigureSignalR(app);
+        }
+
+        private void ConfigureSignalR(IAppBuilder app)
+        {
+            app.MapSignalR();
         }
 
         private void ConfigureLogger(IAppBuilder app)
         {
             var logger = new LoggerConfiguration().WriteTo.ColoredConsole().MinimumLevel.Debug().CreateLogger();
-            Serilog.Log.Logger = logger;
+            Log.Logger = logger;
         }
 
         private void ConfigureStaticFiles(IAppBuilder app)
@@ -42,6 +47,20 @@ namespace AkkaCQRS.Web
                 EnableDirectoryBrowsing = true,
                 FileSystem = new PhysicalFileSystem(publicPath)
             });
+        }
+
+        private static void ConfigureMvc(RouteCollection routes)
+        {
+            AreaRegistration.RegisterAllAreas();
+            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.MapRoute(
+                name: "Default", 
+                url: "{controller}/{action}/{id}", 
+                defaults: new {
+                    controller = "Home",
+                    action = "Index",
+                    id = UrlParameter.Optional
+                });
         }
 
         private static void ConfigureWebApi(IAppBuilder app)

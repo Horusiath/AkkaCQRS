@@ -5,6 +5,7 @@ nuget Akka.Monitoring.StatsD
 nuget Akka.Persistence
 nuget Akka.TestKit.Xunit2
 nuget BCrypt-Official
+nuget Microsoft.AspNet.Mvc
 nuget Microsoft.AspNet.SignalR.Owin
 nuget Microsoft.Owin.Host.SystemWeb
 nuget Microsoft.Owin.StaticFiles

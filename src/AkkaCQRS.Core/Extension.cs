@@ -21,7 +21,7 @@ namespace AkkaCQRS.Core
 
             var usersCoordinator = system.ActorOf(Props.Create(() => new UserCoordinator()), "users");
             var accountCoordinator = system.ActorOf(Props.Create(() => new AccountCoordinator()), "accounts");
-            var usersIndex = system.ActorOf(Props.Create(() => new UserIndex()).WithRouter(new RoundRobinPool(4)), "users-index");
+            var usersIndex = system.ActorOf(Props.Create(() => new UserIndex()), "users-index");
 
             var addressBook = system.ActorOf(Props.Create(() => new AddressBook(new Dictionary<Type, ICanTell>
             {
