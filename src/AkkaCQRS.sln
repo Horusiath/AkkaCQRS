@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AkkaCQRS.Core", "AkkaCQRS.Core\AkkaCQRS.Core.csproj", "{49ABC7A3-A520-46C3-85EB-53BBE4CF6DB3}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{0DEEDB0D-F084-40AD-8725-04654D3A0F0C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AkkaCQRS.Web", "AkkaCQRS.Web\AkkaCQRS.Web.csproj", "{C538B3C6-FEC3-41BA-9445-3134627BDC6C}"
 EndProject
@@ -38,10 +36,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{49ABC7A3-A520-46C3-85EB-53BBE4CF6DB3} = {0DEEDB0D-F084-40AD-8725-04654D3A0F0C}
-		{C538B3C6-FEC3-41BA-9445-3134627BDC6C} = {0DEEDB0D-F084-40AD-8725-04654D3A0F0C}
-		{F7C6454F-C259-4513-9EAB-1E38EA87CE00} = {0DEEDB0D-F084-40AD-8725-04654D3A0F0C}
 	EndGlobalSection
 EndGlobal

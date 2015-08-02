@@ -61,6 +61,7 @@ namespace AkkaCQRS.Web
                     action = "Index",
                     id = UrlParameter.Optional
                 });
+            
         }
 
         private static void ConfigureWebApi(IAppBuilder app)
