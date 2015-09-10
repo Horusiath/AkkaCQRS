@@ -2,6 +2,7 @@
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
+using System.Web.Optimization;
 using System.Web.Routing;
 using AkkaCQRS.Core;
 using AkkaCQRS.Web;
@@ -26,6 +27,13 @@ namespace AkkaCQRS.Web
             ConfigureMvc(RouteTable.Routes);
             ConfigureWebApi(app);
             ConfigureSignalR(app);
+            ConfigureBundles(BundleTable.Bundles);
+        }
+
+        private void ConfigureBundles(BundleCollection bundles)
+        {
+            bundles.Add(new StyleBundle("~/Content/css").Include(
+                "~/Scripts/app/auth/auth.css"));
         }
 
         private void ConfigureSignalR(IAppBuilder app)

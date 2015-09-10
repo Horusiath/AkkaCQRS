@@ -38,10 +38,10 @@ namespace AkkaCQRS.Core
         /// State describes custom data model used for each type of aggregate root.
         /// </summary>
         protected TEntity State = null;
-        
+
         protected AggregateRoot(string persistenceId)
         {
-            //Context.SetReceiveTimeout(DefaultReceiveTimeout);
+            Context.SetReceiveTimeout(DefaultReceiveTimeout);
 
             _persistenceId = persistenceId;
         }
@@ -55,7 +55,7 @@ namespace AkkaCQRS.Core
 
             if (message is SnapshotOffer)
             {
-                var offeredState = ((SnapshotOffer) message).Snapshot as TEntity;
+                var offeredState = ((SnapshotOffer)message).Snapshot as TEntity;
                 if (offeredState != null)
                 {
                     State = offeredState;
@@ -78,7 +78,13 @@ namespace AkkaCQRS.Core
                 Sender.Tell(State, Self);
                 return true;
             }
-            
+
+            if (message is ReceiveTimeout)
+            {
+                Context.Parent.Tell(AggregateCoordinator.Passivate.Instance);
+                return true;
+            }
+
             return OnCommand(message);
         }
 
@@ -118,18 +124,5 @@ namespace AkkaCQRS.Core
         /// While in recovering mode, <paramref name="sender"/> is always null.
         /// </summary>
         protected abstract void UpdateState(IEvent domainEvent, IActorRef sender);
-
-        // monitoring extensions
-        protected override void PostStop()
-        {
-            //Context.IncrementActorStopped();
-            base.PostStop();
-        }
-
-        protected override void PreStart()
-        {
-            //Context.IncrementActorCreated();
-            base.PreStart();
-        }
     }
 }

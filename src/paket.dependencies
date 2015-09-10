@@ -7,5 +7,6 @@ nuget Akka.TestKit.Xunit2
 nuget BCrypt-Official
 nuget Microsoft.AspNet.Mvc
 nuget Microsoft.AspNet.SignalR.Owin
+nuget Microsoft.AspNet.Web.Optimization
 nuget Microsoft.Owin.Host.SystemWeb
 nuget Microsoft.Owin.StaticFiles

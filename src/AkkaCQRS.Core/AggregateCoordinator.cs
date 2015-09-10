@@ -14,7 +14,8 @@ namespace AkkaCQRS.Core
     {
         #region messages
 
-        protected sealed class PendingCommand
+        [Serializable]
+        public sealed class PendingCommand
         {
             public readonly IActorRef Sender;
             public readonly Guid AggregateId;
@@ -30,33 +31,36 @@ namespace AkkaCQRS.Core
             }
         }
 
+        /// <summary>
+        /// Message used in passivation mechanism. In this case each aggregate root is requesting coordinator
+        /// to stop it after it didn't received any message for some time.  Before it do so, it sends a <see cref="Passivate"/> 
+        /// message to coordinator. 
+        /// 
+        /// When aggregate coordinator receives passivation requests it starts buffering all messages incoming 
+        /// to passivate requester. Then it sends a <see cref="PoisonPill"/> to an actor, stopping it in result.
+        /// 
+        /// In case when there are some buffered commands pending, coordinator recreates an aggregates and sends
+        /// all pending messages to it.
+        /// </summary>
+        [Serializable]
+        public sealed class Passivate
+        {
+            public static readonly Passivate Instance = new Passivate();
+
+            private Passivate()
+            {
+            }
+        }
+
         #endregion
-
-        /// <summary>
-        /// Default value of maximum number of child aggregates to be kept in memory at once.
-        /// </summary>
-        public const int DefaultMaxChildrenCount = 64;
-
-        /// <summary>
-        /// Maximum number of child aggregates to be kept in memory at once.
-        /// </summary>
-        public virtual int MaxChildrenCount { get { return DefaultMaxChildrenCount; } }
-
-        /// <summary>
-        ///  Default number of children to be killed at once on kill request.
-        /// </summary>
-        public const int DefaultChildrenToKillCount = 32;
-
-        /// <summary>
-        /// Number of children to be killed at once on kill request.
-        /// </summary>
-        public virtual int ChildrenToKillCount { get { return DefaultChildrenToKillCount; } }
-
+        
         private ILoggingAdapter _log;
         protected ILoggingAdapter Log { get { return _log ?? (_log = Context.GetLogger()); } }
 
         protected readonly string ChildPrefix;
-        private readonly ISet<IActorRef> _terminatingChildren = new HashSet<IActorRef>();
+
+        // set of child actors, that send passivate message, but are not yet dead
+        private readonly ISet<IActorRef> _passivating = new HashSet<IActorRef>();
         private ICollection<PendingCommand> _pendingCommands = new List<PendingCommand>(0);
 
         protected AggregateCoordinator(string childPrefix)
@@ -74,8 +78,8 @@ namespace AkkaCQRS.Core
             var terminated = message as Terminated;
             if (terminated != null)
             {
-                // if Terminated message was received, remove terminated actor from terminating children list
-                _terminatingChildren.ExceptWith(new[] { terminated.ActorRef });
+                // if Terminated message was received, remove passivating actor from passivating children list
+                _passivating.ExceptWith(new[] { terminated.ActorRef });
 
                 // if there were pending commands waiting to be sent to terminated actor, recreate it
                 var groups = _pendingCommands.GroupBy(cmd => cmd.PersistenceId == terminated.ActorRef.Path.Name).ToArray();
@@ -86,6 +90,14 @@ namespace AkkaCQRS.Core
                     var child = Recreate(pendingCommand.AggregateId, pendingCommand.PersistenceId);
                     child.Tell(pendingCommand.Command, pendingCommand.Sender);
                 }
+
+                return true;
+            }
+            else if (message is Passivate)
+            {
+                var child = Sender;
+                _passivating.Add(child);
+                child.Tell(PoisonPill.Instance);
 
                 return true;
             }
@@ -117,7 +129,7 @@ namespace AkkaCQRS.Core
             var child = Context.Child(pid);
             if (!child.Equals(ActorRefs.Nobody))
             {
-                if (_terminatingChildren.Contains(child))
+                if (_passivating.Contains(child))
                 {
                     // add command to cache
                     _pendingCommands.Add(new PendingCommand(Sender, id, pid, command));
@@ -155,34 +167,9 @@ namespace AkkaCQRS.Core
 
         private IActorRef Create(Guid id, string pid)
         {
-            HarvestChildren();
-
             var aggregateRef = Context.ActorOf(GetProps(id), pid);
             Context.Watch(aggregateRef);
             return aggregateRef;
-        }
-
-        /// <summary>
-        /// Checks if children count doesn't expanded over specified boundaries
-        /// and removes overflowing ones from the buffer.
-        /// </summary>
-        private void HarvestChildren()
-        {
-            var children = Context.GetChildren().ToArray();
-            if (children.Length - _terminatingChildren.Count >= MaxChildrenCount)
-            {
-                Log.Debug("Max children count exceeded. Killing {0} children", ChildrenToKillCount);
-
-                // get all non-terminating children, kill the [ChildrenToKillCount] of them
-                // and put onto terminating children list
-                var notTerminating = children.Except(_terminatingChildren);
-                var childrenToKill = notTerminating.Take(ChildrenToKillCount);
-                foreach (var childRef in childrenToKill)
-                {
-                    childRef.Tell(Kill.Instance);
-                    _terminatingChildren.Add(childRef);
-                }
-            }
         }
     }
 }
