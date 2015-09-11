@@ -32,8 +32,11 @@ namespace AkkaCQRS.Web
 
         private void ConfigureBundles(BundleCollection bundles)
         {
-            bundles.Add(new StyleBundle("~/Content/css").Include(
-                "~/Scripts/app/auth/auth.css"));
+            bundles.Add(new ScriptBundle("~/bundles/js/app")
+                .IncludeDirectory("~/Scripts/app/", "*.js", true));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/app/init")
+                .Include("~/Scripts/Main.js"));
         }
 
         private void ConfigureSignalR(IAppBuilder app)

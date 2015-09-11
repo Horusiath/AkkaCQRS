@@ -4,8 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Akka.NET Event Sourcing</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link href="~/Scripts/app/auth/auth.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <style>
         body {
             padding-top: 60px;
@@ -14,15 +13,14 @@
 </head>
 <body aurelia-app="main">
     @RenderBody()
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/3.1.2/rx.all.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.0.min.js"></script>
     <script src="~/signalr/hubs"></script>
-
-    <script src="@Url.Content("~/Scripts/jspm_packages/system.js")"></script>
-    <script src="@Url.Content("~/Scripts/config.js")"></script>
-    <script>
-        System.import("aurelia-bootstrapper");
-    </script>
+    @Scripts.Render("~/bundles/js/app")
+    @Scripts.Render("~/bundles/js/app/init")
 </body>
 </html>
