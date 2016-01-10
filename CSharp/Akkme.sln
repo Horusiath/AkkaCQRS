@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akkme.Shared", "Akkme.Shared\Akkme.Shared.csproj", "{0911A41F-4B1C-41E8-9E06-074F0C7C9C38}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{03AF4168-46FC-4449-ABCB-403231AA21BC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{63D98AD5-37AE-427A-A438-3537CB8F290A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3C6527F7-870E-4422-BCA8-31701DBFF7FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{65E86D38-B43B-43EA-B42F-9FB266C65DE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akkme.Shared.Tests", "Akkme.Shared.Tests\Akkme.Shared.Tests.csproj", "{959E651A-7326-4539-B3DD-3AE900CF6221}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Akkme.Web.Frontend", "Akkme.Web.Frontend\Akkme.Web.Frontend.xproj", "{95DBC765-945F-4E2C-A335-39A6A4843CD1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0911A41F-4B1C-41E8-9E06-074F0C7C9C38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0911A41F-4B1C-41E8-9E06-074F0C7C9C38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0911A41F-4B1C-41E8-9E06-074F0C7C9C38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0911A41F-4B1C-41E8-9E06-074F0C7C9C38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{959E651A-7326-4539-B3DD-3AE900CF6221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{959E651A-7326-4539-B3DD-3AE900CF6221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{959E651A-7326-4539-B3DD-3AE900CF6221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{959E651A-7326-4539-B3DD-3AE900CF6221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95DBC765-945F-4E2C-A335-39A6A4843CD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95DBC765-945F-4E2C-A335-39A6A4843CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95DBC765-945F-4E2C-A335-39A6A4843CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95DBC765-945F-4E2C-A335-39A6A4843CD1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0911A41F-4B1C-41E8-9E06-074F0C7C9C38} = {03AF4168-46FC-4449-ABCB-403231AA21BC}
+		{959E651A-7326-4539-B3DD-3AE900CF6221} = {3C6527F7-870E-4422-BCA8-31701DBFF7FB}
+		{95DBC765-945F-4E2C-A335-39A6A4843CD1} = {63D98AD5-37AE-427A-A438-3537CB8F290A}
+	EndGlobalSection
+EndGlobal
