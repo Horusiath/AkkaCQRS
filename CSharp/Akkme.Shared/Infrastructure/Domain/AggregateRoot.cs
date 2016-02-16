@@ -1,6 +1,7 @@
 ﻿using System;
 using Akka;
 using Akka.Persistence;
+using Akkme.Shared.Infrastructure.Utils;
 
 namespace Akkme.Shared.Infrastructure.Domain
 {
@@ -8,33 +9,30 @@ namespace Akkme.Shared.Infrastructure.Domain
     /// Base class used by all aggregate root types of actors.
     /// </summary>
     /// <typeparam name="TState"></typeparam>
-    public abstract class AggregateRoot<TState> : PersistentActor
+    public abstract class AggregateRoot<TState> : ReceivePersistentActor
     {
-        protected static readonly AggregateSettings AggregateSettings = AggregateSettings.Create(Context.System);
+        protected static readonly AkkmeSettings Settings = AkkmeSettings.Create(Context.System);
+        protected Akkme Plugin { get; } = Akkme.Get(Context.System);
         protected TState State { get; set; }
 
         private int _eventCount = 0;
 
         protected AggregateRoot()
         {
-            PersistenceId = Self.Path.Name + "-" + Context.Parent.Path.Name;
+            var path = Self.Path;
+            PersistenceId = path.Parent.Name + "/" + path.Name;
+
+            Recover<SnapshotOffer>(offer =>
+            {
+                if (offer.Snapshot is TState)
+                    State = (TState) offer.Snapshot;
+            });
+            Recover((Action<IDomainEvent>)UpdateState);
         }
 
         public sealed override string PersistenceId { get; }
 
         public abstract void UpdateState(IDomainEvent domainEvent);
-
-        protected override bool ReceiveRecover(object message)
-        {
-            return message.Match()
-                .With<SnapshotOffer>(offer =>
-                {
-                    if (offer.Snapshot is TState)
-                        State = (TState) offer.Snapshot;
-                })
-                .With<IDomainEvent>(UpdateState)
-                .WasHandled;
-        }
 
         protected void Emit<TEvent>(TEvent domainEvent, Action<TEvent> handler = null) where TEvent : IDomainEvent
         {
@@ -48,7 +46,7 @@ namespace Akkme.Shared.Infrastructure.Domain
 
         private void SaveSnapshotIfNecessary()
         {
-            _eventCount = (_eventCount + 1)%AggregateSettings.SnapshotInterval;
+            _eventCount = (_eventCount + 1) % Settings.SnapshotAfter;
             if (_eventCount == 0)
             {
                 SaveSnapshot(State);

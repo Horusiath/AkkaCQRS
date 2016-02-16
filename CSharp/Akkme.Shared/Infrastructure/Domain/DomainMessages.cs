@@ -1,4 +1,8 @@
-﻿namespace Akkme.Shared.Infrastructure.Domain
+﻿using System;
+using Akkme.Shared.Infrastructure.Serializers;
+using Bond;
+
+namespace Akkme.Shared.Infrastructure.Domain
 {
     public interface IDomainMessage { }
 
@@ -6,22 +10,20 @@
 
     public interface IDomainCommand: IDomainMessage { }
 
-    public interface IShardedMessage
+    public interface ISharded
     {
-        string ShardId { get; }
-        string EntityId { get; }
+        string AggregateId { get; }
     }
 
-    public struct ShardEnvelope<TMessage> : IShardedMessage
+    [Schema]
+    public struct ShardEnvelope<TMessage> : IBond, ISharded
     {
-        public string ShardId { get; }
-        public string EntityId { get; }
-        public TMessage Message { get; }
-
-        public ShardEnvelope(string shardId, string entityId, TMessage message)
+        [Id(0), Required] public string AggregateId { get; }
+        [Id(0), Required] public TMessage Message { get; }
+        
+        public ShardEnvelope(string aggregateId, TMessage message)
         {
-            ShardId = shardId;
-            EntityId = entityId;
+            AggregateId = aggregateId;
             Message = message;
         }
     }

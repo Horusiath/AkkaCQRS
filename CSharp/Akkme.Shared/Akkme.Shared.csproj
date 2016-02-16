@@ -54,6 +54,22 @@
       <HintPath>..\packages\Akka.Serialization.Wire.1.0.6.142-beta\lib\net45\Akka.Serialization.Wire.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Bond, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Core.CSharp.4.0.2\lib\net45\Bond.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Bond.Attributes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Core.CSharp.4.0.2\lib\net45\Bond.Attributes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Bond.IO, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Core.CSharp.4.0.2\lib\net45\Bond.IO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Bond.JSON, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bond.Runtime.CSharp.4.0.2\lib\net45\Bond.JSON.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Google.ProtocolBuffers, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.dll</HintPath>
       <Private>True</Private>
@@ -84,14 +100,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\Accounts\Account.cs" />
+    <Compile Include="Domain\Accounts\TransferProtocol\Commands.cs" />
+    <Compile Include="Domain\Accounts\TransferProtocol\TransferSaga.cs" />
+    <Compile Include="Domain\Customers\BankCustomer.cs" />
+    <Compile Include="Domain\Events\V1\AccountEvents.cs" />
+    <Compile Include="Domain\Events\V1\TransferSagaEvents.cs" />
+    <Compile Include="Domain\Events\V2\AccountEvents.cs" />
+    <Compile Include="Infrastructure\AkkmeExtension.cs" />
     <Compile Include="Infrastructure\Domain\AggregateRoot.cs" />
-    <Compile Include="Infrastructure\Domain\AggregateSettings.cs" />
+    <Compile Include="Infrastructure\AkkmeSettings.cs" />
+    <Compile Include="Infrastructure\Domain\AkkmeMessageExtractor.cs" />
     <Compile Include="Infrastructure\Domain\DomainMessages.cs" />
+    <Compile Include="Infrastructure\EventAdapters\AccountEventAdapter.cs" />
+    <Compile Include="Infrastructure\Serializers\BondSerializer.cs" />
+    <Compile Include="Infrastructure\Utils\NavigationExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Domain\Accounts\TransferProtocol\README.md" />
+    <None Include="Domain\Events\README.md" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="reference.conf" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
