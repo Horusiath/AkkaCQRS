@@ -82,7 +82,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\Accounts\EventVersioningSpec.cs" />
+    <Compile Include="Domain\Accounts\AccountEventVersioningSpec.cs" />
     <Compile Include="Domain\Accounts\TransferProtocolSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -95,6 +95,9 @@
       <Project>{0911a41f-4b1c-41e8-9e06-074f0c7c9c38}</Project>
       <Name>Akkme.Shared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastucture\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

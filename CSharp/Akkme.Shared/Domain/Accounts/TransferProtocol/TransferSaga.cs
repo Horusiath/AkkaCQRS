@@ -18,17 +18,17 @@ namespace Akkme.Shared.Domain.Accounts.TransferProtocol
     /// </summary>
     public sealed class TransferSaga : ReceivePersistentActor
     {
-        private Infrastructure.Akkme _plugin = Infrastructure.Akkme.Get(Context.System);
-
         private decimal amount;
         private string toAccount;
 
         // used for trackings steps to make on rollback compensation
         private ITransferEvent lastEvent;
         private IActorRef replyTo;
+        private readonly IActorRef accountShardRegion;
 
-        public TransferSaga(string transactionId)
+        public TransferSaga(string transactionId, IActorRef accountShardRegion)
         {
+            this.accountShardRegion = accountShardRegion;
             if (string.IsNullOrEmpty(transactionId))
                 throw new ArgumentNullException(nameof(transactionId), $"{GetType()} requires {nameof(transactionId)} to be provided");
 
@@ -65,7 +65,7 @@ namespace Akkme.Shared.Domain.Accounts.TransferProtocol
                 replyTo = Sender;
                 // as mentioned since TransferSaga is created by an Account sending a money,
                 // fromId allways is based on the parent
-                var fromId = Context.Parent.AggregateId();
+                var fromId = replyTo.AggregateId();
                 var toId = start.ToAccountNr;
                 Persist(new TransferStarted(start.Amount, fromId, toId), OnTransferStarted);
             });
@@ -99,14 +99,14 @@ namespace Akkme.Shared.Domain.Accounts.TransferProtocol
 
         private void OnMoneyDeposited(Deposited e)
         {
-            replyTo?.Tell(new TransferSucceed(PersistenceId));
+            replyTo.Tell(new TransferSucceed(PersistenceId));
             Context.Stop(Self);
         }
 
         private void OnMoneyWithdrawn(Withdrawn e)
         {
             lastEvent = e;
-            _plugin.Accounts.Tell(new ShardEnvelope<Deposit>(toAccount, new Deposit(PersistenceId, amount)));
+            accountShardRegion.Tell(new ShardEnvelope<Deposit>(toAccount, new Deposit(PersistenceId, amount)));
             Become(AwaitDeposited);
         }
 
@@ -115,7 +115,7 @@ namespace Akkme.Shared.Domain.Accounts.TransferProtocol
             lastEvent = e;
             amount = e.Amount;
             toAccount = e.ToAccountNr;
-            Context.Parent.Tell(new Withdraw(PersistenceId, amount));
+            replyTo.Tell(new Withdraw(PersistenceId, amount));
             Become(AwaitWithdrawn);
         }
 
@@ -124,17 +124,17 @@ namespace Akkme.Shared.Domain.Accounts.TransferProtocol
             if (lastEvent is TransferStarted)
             {
                 // compensating action - we ordered withdraw already, now order a deposit back withdrawn amount
-                Context.Parent.Tell(new Deposit(PersistenceId, amount));
+                replyTo.Tell(new Deposit(PersistenceId, amount));
             }
             if (lastEvent is Withdrawn)
             {
                 // compensating action - we ordered withdraw and deposit already, 
                 // now we need to rollback both of these operations
-                _plugin.Accounts.Tell(new ShardEnvelope<Withdraw>(toAccount, new Withdraw(PersistenceId, amount)));
-                Context.Parent.Tell(new Deposit(PersistenceId, amount));
+                accountShardRegion.Tell(new ShardEnvelope<Withdraw>(toAccount, new Withdraw(PersistenceId, amount)));
+                replyTo.Tell(new Deposit(PersistenceId, amount));
             }
 
-            replyTo?.Tell(new TransferFailed(PersistenceId, new Exception("Couldn't finish transfer transaction, rollback has been called")));
+            replyTo.Tell(new TransferFailed(PersistenceId, new Exception("Couldn't finish transfer transaction, rollback has been called")));
             Context.Stop(Self);
         }
 

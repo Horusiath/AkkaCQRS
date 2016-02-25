@@ -12,8 +12,11 @@ using V2 = Akkme.Shared.Domain.Events.V2;
 
 namespace Akkme.Shared.Tests.Domain.Accounts
 {
-    public class EventVersioningSpec : TestKit
+    public class AccountEventVersioningSpec : TestKit
     {
+        /// <summary>
+        /// Persistent actor for testing purposes. It's only able to handle V2 version events.
+        /// </summary>
         private sealed class TestPersistentActor : ReceivePersistentActor
         {
             public override string PersistenceId { get; }
@@ -40,7 +43,7 @@ namespace Akkme.Shared.Tests.Domain.Accounts
             }
         ";
 
-        public EventVersioningSpec(ITestOutputHelper output) : base(TestConfig, output)
+        public AccountEventVersioningSpec(ITestOutputHelper output) : base(TestConfig, output)
         {
         }
 
